@@ -24,8 +24,8 @@ class SegmentationPredictor(DetectionPredictor):
                                     classes=self.args.classes)
         results = []
         # proto = preds[1][-1] if len(preds[1]) == 3 else preds[1]  # second output is len 3 if pt, but only 1 if exported
-        # TODO: figure out another way to determine if it's pt or exported
-        proto = preds[1]
+        # Make it compatible with .engine batch_size=3
+        proto = preds[1][-1] if not self.model.engine else preds[1] # second output is len 3 if pt, but only 1 if exported
         for i, pred in enumerate(p):
             orig_img = orig_imgs[i] if isinstance(orig_imgs, list) else orig_imgs
             path = self.batch[0]
