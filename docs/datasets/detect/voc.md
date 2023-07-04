@@ -1,6 +1,7 @@
 ---
 comments: true
 description: Learn about the VOC dataset, designed to encourage research on object detection, segmentation, and classification with standardized evaluation metrics.
+keywords: PASCAL VOC dataset, object detection, segmentation, classification, computer vision, deep learning, benchmarking, VOC2007, VOC2012, mean Average Precision, mAP, PASCAL VOC evaluation server, trained models, YAML, YAML file, VOC.yaml, training, YOLOv8n model, model training, image size, annotations, object bounding boxes, segmentation masks, instance segmentation, SSD, Mask R-CNN, yolov8n.pt, mosaicing, PASCAL VOC Consortium
 ---
 
 # VOC Dataset
@@ -28,7 +29,7 @@ The VOC dataset is widely used for training and evaluating deep learning models 
 
 ## Dataset YAML
 
-A YAML (Yet Another Markup Language) file is used to define the dataset configuration. It contains information about the dataset's paths, classes, and other relevant information. In the case of the VOC dataset, the `VOC.yaml` file should be created and maintained.
+A YAML (Yet Another Markup Language) file is used to define the dataset configuration. It contains information about the dataset's paths, classes, and other relevant information. In the case of the VOC dataset, the `VOC.yaml` file is maintained at [https://github.com/ultralytics/ultralytics/blob/main/ultralytics/datasets/VOC.yaml](https://github.com/ultralytics/ultralytics/blob/main/ultralytics/datasets/VOC.yaml).
 
 !!! example "ultralytics/datasets/VOC.yaml"
 
