@@ -329,7 +329,9 @@ class YOLO:
         Args:
             **kwargs : Any other args accepted by the predictors. To see all args check 'configuration' section in docs
         """
-        self._check_is_pytorch_model()
+        # Disable verification for support ONNX input model
+        # self._check_is_pytorch_model()
+
         overrides = self.overrides.copy()
         overrides.update(kwargs)
         overrides['mode'] = 'export'
