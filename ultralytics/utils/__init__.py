@@ -922,17 +922,17 @@ class SettingsManager(dict):
         from ultralytics.utils.checks import check_version
         from ultralytics.utils.torch_utils import torch_distributed_zero_first
 
-        git_dir = get_git_dir()
-        root = git_dir or Path()
-        datasets_root = (root.parent if git_dir and is_dir_writeable(root.parent) else root).resolve()
+        # git_dir = get_git_dir()
+        # root = git_dir or Path()
+        # datasets_root = (root.parent if git_dir and is_dir_writeable(root.parent) else root).resolve()
 
         self.file = Path(file)
         self.version = version
         self.defaults = {
             "settings_version": version,
-            "datasets_dir": str(datasets_root / "datasets"),
-            "weights_dir": str(root / "weights"),
-            "runs_dir": str(root / "runs"),
+            "datasets_dir": str(self.file.parent / "datasets"),
+            "weights_dir": str(self.file.parent / "models"),
+            "runs_dir": str(self.file.parent / "training_logs" / "runs"),
             "uuid": hashlib.sha256(str(uuid.getnode()).encode()).hexdigest(),
             "sync": True,
             "api_key": "",
