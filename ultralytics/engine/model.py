@@ -569,7 +569,8 @@ class Model(nn.Module):
         Raises:
             AssertionError: If the model is not a PyTorch model.
         """
-        self._check_is_pytorch_model()
+        # Disable verification for support ONNX input model
+        # self._check_is_pytorch_model()
         from .exporter import Exporter
 
         custom = {"imgsz": self.model.args["imgsz"], "batch": 1, "data": None, "verbose": False}  # method defaults

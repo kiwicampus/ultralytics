@@ -187,6 +187,34 @@ class Exporter:
         self.device = select_device("cpu" if self.args.device is None else self.args.device)
 
         # Checks
+
+        # HANDLE ONNX MODELS to TENSORRT
+        if isinstance(model, str) and model.endswith('.onnx'):
+
+            from ultralytics.nn.autobackend import AutoBackend 
+            onnx_model = AutoBackend(model)
+
+            f = ['']
+
+            self.im = torch.zeros(self.args.batch, 3, *self.args.imgsz).to(self.device)
+            self.model = model
+            self.file = Path(model)
+
+            self.metadata = {
+                'description': "Model generated",
+                'author': 'Ultralytics',
+                'license': 'AGPL-3.0 https://ultralytics.com/license',
+                'version': __version__,
+                'stride': onnx_model.stride,
+                'task': onnx_model.task,
+                'batch': self.args.batch,
+                'imgsz': onnx_model.imgsz,
+                'names': check_class_names(onnx_model.names)
+            }
+
+            f[0], _ = self.export_engine()
+            return f
+
         if not hasattr(model, "names"):
             model.names = default_class_names()
         model.names = check_class_names(model.names)
@@ -641,7 +669,12 @@ class Exporter:
     def export_engine(self, prefix=colorstr("TensorRT:")):
         """YOLOv8 TensorRT export https://developer.nvidia.com/tensorrt."""
         assert self.im.device.type != "cpu", "export running on CPU but must be on GPU, i.e. use 'device=0'"
-        f_onnx, _ = self.export_onnx()  # run before trt import https://github.com/ultralytics/ultralytics/issues/7016
+        # f_onnx, _ = self.export_onnx()  # run before trt import https://github.com/ultralytics/ultralytics/issues/7016
+
+        if isinstance(self.model, str) and self.model.endswith(".onnx"):
+            f_onnx = self.model
+        else:
+            f_onnx, _ = self.export_onnx()
 
         try:
             import tensorrt as trt  # noqa
