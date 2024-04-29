@@ -931,7 +931,7 @@ class SettingsManager(dict):
         self.defaults = {
             "settings_version": version,
             "datasets_dir": str(self.file.parent / "datasets"),
-            "weights_dir": str(self.file.parent / "models"),
+            "weights_dir": str(self.file.parent / ".models"),
             "runs_dir": str(self.file.parent / "training_logs" / "runs"),
             "uuid": hashlib.sha256(str(uuid.getnode()).encode()).hexdigest(),
             "sync": True,
