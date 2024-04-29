@@ -189,27 +189,27 @@ class Exporter:
         # Checks
 
         # HANDLE ONNX MODELS to TENSORRT
-        if isinstance(model, str) and model.endswith('.onnx'):
+        if isinstance(model, str) and model.endswith(".onnx"):
+            from ultralytics.nn.autobackend import AutoBackend
 
-            from ultralytics.nn.autobackend import AutoBackend 
             onnx_model = AutoBackend(model)
 
-            f = ['']
+            f = [""]
 
             self.im = torch.zeros(self.args.batch, 3, *self.args.imgsz).to(self.device)
             self.model = model
             self.file = Path(model)
 
             self.metadata = {
-                'description': "Model generated",
-                'author': 'Ultralytics',
-                'license': 'AGPL-3.0 https://ultralytics.com/license',
-                'version': __version__,
-                'stride': onnx_model.stride,
-                'task': onnx_model.task,
-                'batch': self.args.batch,
-                'imgsz': onnx_model.imgsz,
-                'names': check_class_names(onnx_model.names)
+                "description": "Model generated",
+                "author": "Ultralytics",
+                "license": "AGPL-3.0 https://ultralytics.com/license",
+                "version": __version__,
+                "stride": onnx_model.stride,
+                "task": onnx_model.task,
+                "batch": self.args.batch,
+                "imgsz": onnx_model.imgsz,
+                "names": check_class_names(onnx_model.names),
             }
 
             f[0], _ = self.export_engine()
