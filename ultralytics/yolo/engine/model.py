@@ -252,6 +252,10 @@ class YOLO:
             self.predictor.args = get_cfg(self.predictor.args, overrides)
             if 'project' in overrides or 'name' in overrides:
                 self.predictor.save_dir = self.predictor.get_save_dir()
+        if overrides["mode"] != "track" and hasattr(self.predictor, 'trackers'):
+            self.clear_callback("on_predict_start")
+            self.clear_callback("on_predict_postprocess_end")
+            del self.predictor.trackers
         return self.predictor.predict_cli(source=source) if is_cli else self.predictor(source=source, stream=stream)
 
     def track(self, source=None, stream=False, persist=False, **kwargs):
