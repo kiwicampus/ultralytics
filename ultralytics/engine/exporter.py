@@ -272,6 +272,37 @@ class Exporter:
         # Argument compatibility checks
         fmt_keys = fmts_dict["Arguments"][flags.index(True) + 1]
         validate_args(fmt, self.args, fmt_keys)
+
+        # HANDLE ONNX MODELS to TENSORRT
+        if isinstance(model, str) and model.endswith('.onnx'):
+
+            from ultralytics.nn.autobackend import AutoBackend
+            onnx_model = AutoBackend(model)
+
+            f = ['']
+
+            self.im = torch.zeros(self.args.batch, 3, *self.args.imgsz).to(self.device)
+            self.model = model
+            self.file = Path(model)
+
+            self.metadata = {
+                "description": "Model generated",
+                "author": "Ultralytics",
+                "date": datetime.now().isoformat(),
+                "version": __version__,
+                "license": "AGPL-3.0 License (https://ultralytics.com/license)",
+                "docs": "https://docs.ultralytics.com",
+                "stride": onnx_model.stride,
+                "task": onnx_model.task,
+                "batch": self.args.batch,
+                "imgsz": onnx_model.imgsz,
+                "names": check_class_names(onnx_model.names),
+                "args": {k: v for k, v in self.args if k in fmt_keys},
+            }
+
+            f[0], _ = self.export_engine()
+            return f
+        
         if imx and not self.args.int8:
             LOGGER.warning("WARNING ⚠️ IMX only supports int8 export, setting int8=True.")
             self.args.int8 = True
@@ -846,9 +877,12 @@ class Exporter:
     @try_export
     def export_engine(self, dla=None, prefix=colorstr("TensorRT:")):
         """YOLO TensorRT export https://developer.nvidia.com/tensorrt."""
-        assert self.im.device.type != "cpu", "export running on CPU but must be on GPU, i.e. use 'device=0'"
-        f_onnx, _ = self.export_onnx()  # run before TRT import https://github.com/ultralytics/ultralytics/issues/7016
-
+        assert self.im.device.type != "cpu", "export running on CPU but must be on GPU, i.e. use 'device=0'"      
+        if isinstance(self.model, str) and self.model.endswith('.onnx'):
+            f_onnx = self.model
+        else:
+            f_onnx, _ = self.export_onnx()  # run before TRT import https://github.com/ultralytics/ultralytics/issues/7016
+            
         try:
             import tensorrt as trt  # noqa
         except ImportError:

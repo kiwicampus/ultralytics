@@ -714,7 +714,8 @@ class Model(torch.nn.Module):
             >>> model.export(format="onnx", dynamic=True, simplify=True)
             'path/to/exported/model.onnx'
         """
-        self._check_is_pytorch_model()
+        # Disable verification for support ONNX input model
+        # self._check_is_pytorch_model()
         from .exporter import Exporter
 
         custom = {
