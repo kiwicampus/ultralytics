@@ -719,7 +719,8 @@ class Model(torch.nn.Module):
         from .exporter import Exporter
 
         custom = {
-            "imgsz": self.model.args["imgsz"],
+            # For some reason when model is ONNX, self.model.args is not set
+            # "imgsz": self.model.args["imgsz"], 
             "batch": 1,
             "data": None,
             "device": None,  # reset to avoid multi-GPU errors
