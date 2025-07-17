@@ -547,6 +547,10 @@ class Model(torch.nn.Module):
                 self.predictor.save_dir = get_save_dir(self.predictor.args)
         if prompts and hasattr(self.predictor, "set_prompts"):  # for SAM-type models
             self.predictor.set_prompts(prompts)
+        if args["mode"] != "track" and hasattr(self.predictor, 'trackers'):
+            self.clear_callback("on_predict_start")
+            self.clear_callback("on_predict_postprocess_end")
+            del self.predictor.trackers
         return self.predictor.predict_cli(source=source) if is_cli else self.predictor(source=source, stream=stream)
 
     def track(
