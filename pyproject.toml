@@ -25,7 +25,7 @@ build-backend = "setuptools.build_meta"
 # Project settings -----------------------------------------------------------------------------------------------------
 [project]
 name = "ultralytics"
-dynamic = ["version"]
+version = "8.3.97"
 description = "Ultralytics YOLO 🚀 for SOTA object detection, multi-object tracking, instance segmentation, pose estimation and image classification."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -137,8 +137,6 @@ ultralytics = "ultralytics.cfg:entrypoint"
 packages = { find = { where = ["."], include = ["ultralytics", "ultralytics.*"] } }
 package-data = { "ultralytics" = ["**/*.yaml", "../tests/*.py"], "ultralytics.assets" = ["*.jpg"] }
 
-[tool.setuptools.dynamic]
-version = { attr = "ultralytics.__version__" }
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules --durations=30 --color=yes"
