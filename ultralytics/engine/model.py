@@ -547,6 +547,10 @@ class Model(torch.nn.Module):
                 self.predictor.save_dir = get_save_dir(self.predictor.args)
         if prompts and hasattr(self.predictor, "set_prompts"):  # for SAM-type models
             self.predictor.set_prompts(prompts)
+        if args["mode"] != "track" and hasattr(self.predictor, 'trackers'):
+            self.clear_callback("on_predict_start")
+            self.clear_callback("on_predict_postprocess_end")
+            del self.predictor.trackers
         return self.predictor.predict_cli(source=source) if is_cli else self.predictor(source=source, stream=stream)
 
     def track(
@@ -714,11 +718,13 @@ class Model(torch.nn.Module):
             >>> model.export(format="onnx", dynamic=True, simplify=True)
             'path/to/exported/model.onnx'
         """
-        self._check_is_pytorch_model()
+        # Disable verification for support ONNX input model
+        # self._check_is_pytorch_model()
         from .exporter import Exporter
 
         custom = {
-            "imgsz": self.model.args["imgsz"],
+            # For some reason when model is ONNX, self.model.args is not set
+            # "imgsz": self.model.args["imgsz"], 
             "batch": 1,
             "data": None,
             "device": None,  # reset to avoid multi-GPU errors
