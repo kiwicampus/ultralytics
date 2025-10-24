@@ -48,8 +48,9 @@ def on_predict_start(predictor: object, persist: bool = False) -> None:
     for _ in range(predictor.dataset.bs):
         tracker = TRACKER_MAP[cfg.tracker_type](args=cfg, frame_rate=30)
         trackers.append(tracker)
-        if predictor.dataset.mode != "stream":  # only need one tracker for other modes
-            break
+        # WE NEED MULTIPLE TRACKERS FOR BATCHED TRACKING
+        # if predictor.dataset.mode != "stream":  # only need one tracker for other modes
+        #     break
     predictor.trackers = trackers
     predictor.vid_path = [None] * predictor.dataset.bs  # for determining when to reset tracker on new video
 
@@ -70,11 +71,13 @@ def on_predict_postprocess_end(predictor: object, persist: bool = False) -> None
     is_obb = predictor.args.task == "obb"
     is_stream = predictor.dataset.mode == "stream"
     for i, result in enumerate(predictor.results):
-        tracker = predictor.trackers[i if is_stream else 0]
+        # index = i if is_stream else 0
+        index = i # WE NEED MULTIPLE TRACKERS FOR BATCHED TRACKING
+        tracker = predictor.trackers[index]
         vid_path = predictor.save_dir / Path(result.path).name
-        if not persist and predictor.vid_path[i if is_stream else 0] != vid_path:
+        if not persist and predictor.vid_path[index] != vid_path:
             tracker.reset()
-            predictor.vid_path[i if is_stream else 0] = vid_path
+            predictor.vid_path[index] = vid_path
 
         det = (result.obb if is_obb else result.boxes).cpu().numpy()
         if len(det) == 0:
